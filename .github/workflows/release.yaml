@@ -39,10 +39,10 @@ jobs:
           
           # Build using ldflags to inject your global variables
           go build -trimpath -ldflags="-s -w \
-            -X main.version=${GITHUB_REF_NAME} \
-            -X main.commit=${GITHUB_SHA} \
-            -X main.buildDate=${{ steps.build_time.outputs.date }}" \
-            -o "$BINARY_NAME" .
+            -X gocursorgen/cmd/gocursorgen.version=${GITHUB_REF_NAME} \
+            -X gocursorgen/cmd/gocursorgen.commit=${GITHUB_SHA} \
+            -X gocursorgen/cmd/gocursorgen.buildDate=${{ steps.build_time.outputs.date }}" \
+            -o "$BINARY_NAME" ./cmd/gocursorgen
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
