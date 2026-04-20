@@ -1,0 +1,51 @@
+name: Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [amd64, arm64] 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Generate Build Date
+        id: build_time
+        run: echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+
+      - name: Build Binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          BINARY_NAME="gocursorgen-${{ matrix.goos }}-${{ matrix.goarch }}"
+          
+          # Build using ldflags to inject your global variables
+          go build -trimpath -ldflags="-s -w \
+            -X main.version=${GITHUB_REF_NAME} \
+            -X main.commit=${GITHUB_SHA} \
+            -X main.buildDate=${{ steps.build_time.outputs.date }}" \
+            -o "$BINARY_NAME" .
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: gocursorgen-*
+          generate_release_notes: true

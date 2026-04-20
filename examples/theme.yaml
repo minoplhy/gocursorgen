@@ -1,0 +1,20 @@
+cursor:
+    - name: "A"
+      files:
+        - "Text.png"
+        - "Text2.png"
+    - name: "B"
+      files:
+        - "Handwriting.ani"
+    - name: "C"
+      files:
+        - "Text.png"
+    - name: "D"
+      folder: "miku"
+  
+theme:
+    box_spiral: "A"
+    top_tee: "A"
+    pencil: "B"
+    s-resize: "C"
+    default: "D"
