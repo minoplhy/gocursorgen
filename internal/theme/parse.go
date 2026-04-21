@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gocursorgen/internal/cursors"
 	"os"
+	"sort"
 
 	"github.com/goccy/go-yaml"
 )
@@ -84,7 +85,7 @@ func validate(raw *yamlFile) error {
 
 // Convert yaml to ThemeFile struct
 func convert(raw *yamlFile) *ThemeFile {
-	CursorsEntry := make([]cursors.CursorEntry, len(raw.Cursor))
+	dcursors := make([]cursors.CursorEntry, len(raw.Cursor))
 	for i, c := range raw.Cursor {
 		files := make([]cursors.FileEntry, len(c.Files))
 		for j, f := range c.Files {
@@ -93,15 +94,30 @@ func convert(raw *yamlFile) *ThemeFile {
 				HotSpot: f.YamlHotSpot.toHotSpot(),
 			}
 		}
-		CursorsEntry[i] = cursors.CursorEntry{
+
+		sizes := sortedDesc(c.Sizes)
+		if len(sizes) == 0 {
+			sizes = raw.Global.Sizes
+		}
+
+		dcursors[i] = cursors.CursorEntry{
 			Name:    c.Name,
 			Files:   files,
 			Folder:  c.Folder,
 			HotSpot: c.YamlHotSpot.toHotSpot(),
+			Sizes:   sizes,
 		}
 	}
 	return &ThemeFile{
-		Cursors: CursorsEntry,
+		Cursors: dcursors,
 		Theme:   raw.Theme,
+		Options: Options{Sizes: raw.Global.Sizes},
 	}
+}
+
+func sortedDesc(sizes []uint32) []uint32 {
+	out := make([]uint32, len(sizes))
+	copy(out, sizes)
+	sort.Slice(out, func(i, j int) bool { return out[i] > out[j] })
+	return out
 }

@@ -62,10 +62,16 @@ type yamlCursorEntry struct {
 	Name        string          `yaml:"name"`
 	Files       []yamlFileEntry `yaml:"files"`
 	Folder      string          `yaml:"folder"`
+	Sizes       []uint32        `yaml:"size"`
 	YamlHotSpot `yaml:",inline"`
 }
 
 type yamlFile struct {
 	Cursor []yamlCursorEntry `yaml:"cursor"`
 	Theme  map[string]string `yaml:"theme"`
+	Global yamlOptions       `yaml:"global"`
+}
+
+type yamlOptions struct {
+	Sizes []uint32 `yaml:"size"`
 }

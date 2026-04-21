@@ -74,31 +74,58 @@ func (entry *CursorEntry) entryToFileList(prefix string) (CursorEntities, int, e
 		decoded[i] = decodedFile{path: path, frames: frames}
 		totalFrames += len(frames)
 	}
-	animated := totalFrames > 1
+
+	// Flatten all frames across all files
+	type rawFrame struct {
+		img      image.Image
+		path     string
+		fileIdx  int
+		frameIdx int
+	}
+	var allFrames []rawFrame
+	for i, df := range decoded {
+		for frameIdx, frame := range df.frames {
+			allFrames = append(allFrames, rawFrame{
+				img:      frame,
+				path:     df.path,
+				fileIdx:  i,
+				frameIdx: frameIdx,
+			})
+		}
+	}
+	animated := len(allFrames) > 1
+
+	sizes := entry.Sizes
+	if len(sizes) == 0 {
+		sizes = []uint32{uint32(allFrames[0].img.Bounds().Dx())}
+	}
 
 	var Cursors []CursorsEntity
 	count := 0
 
-	for i, df := range decoded {
-		hs, err := entry.resolveHotSpot(i, df.path)
-		if err != nil {
-			return nil, 0, fmt.Errorf("xcursorgen: cursor %q file %q: %w", entry.Name, df.path, err)
-		}
-
-		for frameIdx, frame := range df.frames {
-			bounds := frame.Bounds()
-
-			// Write frame to a PNG - loadImage reads it back normally
-			frame, err := writeFrame(frame, df.path, frameIdx, entry.Options)
+	// Outer loop: size (largest first - already sorted desc by parse time)
+	// Inner loop: frame
+	// This groups all animation frames for a given size contiguously in the TOC
+	for _, size := range sizes {
+		for _, rf := range allFrames {
+			hs, err := entry.resolveHotSpot(rf.fileIdx, rf.path)
 			if err != nil {
-				return nil, 0, fmt.Errorf("xcursorgen: cursor %q: temp frame: %w", entry.Name, err)
+				return nil, 0, fmt.Errorf("xcursorgen: cursor %q file %q: %w", entry.Name, rf.path, err)
+			}
+
+			resized, scaledX, scaledY := imagedecode.Resize(rf.img, size, hs.X, hs.Y)
+
+			framePath, err := writeFrame(resized, rf.path, rf.frameIdx, size, entry.Options)
+			if err != nil {
+				return nil, 0, fmt.Errorf("xcursorgen: cursor %q frame %d size %d: %w",
+					entry.Name, rf.frameIdx, size, err)
 			}
 
 			Cursors = append(Cursors, CursorsEntity{
-				Size:    uint32(bounds.Dx()),
-				XHot:    hs.X,
-				YHot:    hs.Y,
-				PNGFile: frame,
+				Size:    size,
+				XHot:    scaledX,
+				YHot:    scaledY,
+				PNGFile: framePath,
 				Delay:   delayForEntry(animated),
 			})
 			count++
@@ -110,7 +137,7 @@ func (entry *CursorEntry) entryToFileList(prefix string) (CursorEntities, int, e
 
 // writeTempFrame encodes a single frame as a PNG into a temp file.
 // Caller is responsible for cleanup via cleanupFileList.
-func writeFrame(img image.Image, sourcePath string, frameIdx int, opts Options) (string, error) {
+func writeFrame(img image.Image, sourcePath string, frameIdx int, size uint32, opts Options) (string, error) {
 	var path string
 
 	if opts.RetainFrames {
@@ -120,7 +147,7 @@ func writeFrame(img image.Image, sourcePath string, frameIdx int, opts Options) 
 		}
 		ext := filepath.Ext(sourcePath)
 		base := strings.TrimSuffix(filepath.Base(sourcePath), ext)
-		path = filepath.Join(srcDir, fmt.Sprintf("%s_frame%d.png", base, frameIdx))
+		path = filepath.Join(srcDir, fmt.Sprintf("%s_frame%d_%d.png", base, frameIdx, size))
 	} else {
 		f, err := os.CreateTemp("", "xcursorgen-frame-*.png")
 		if err != nil {

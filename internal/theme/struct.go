@@ -6,4 +6,9 @@ import "gocursorgen/internal/cursors"
 type ThemeFile struct {
 	Cursors []cursors.CursorEntry
 	Theme   map[string]string // XC_name -> CursorEntry.Name
+	Options Options
+}
+
+type Options struct {
+	Sizes []uint32
 }

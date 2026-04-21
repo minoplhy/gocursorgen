@@ -9,6 +9,10 @@ Support file Type: `.png` `.gif` `.jpg` `.ani`
 ## YAML Schema
 
 ```yaml
+# Optional Resize
+global:
+  size: [32, 48, 64, 96]
+
 cursor:
     - name: <name>
       files:

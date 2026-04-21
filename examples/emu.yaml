@@ -1,0 +1,88 @@
+# Source .ANI files: https://www.colorfulstage.com/media/download/
+#
+global:
+  size: [32, 48, 64, 96]
+
+cursor:
+    - name: Normal
+      files:
+        - emuemu/Normal.ani
+    - name: Vertical
+      files:
+        - emuemu/Vertical.ani
+    - name: Horizontal
+      files:
+        - emuemu/Horizontal.ani
+    - name: Diagonal2
+      files:
+        - emuemu/Diagonal2.ani
+    - name: Diagonal1
+      files:
+        - emuemu/Diagonal1.ani
+    - name: Text
+      files:
+        - emuemu/Text.ani
+    - name: Help
+      files:
+        - emuemu/Help.ani
+    - name: Unavailable
+      files:
+        - emuemu/Unavailable.ani
+    - name: Link
+      files:
+        - emuemu/Link.ani
+    - name: Move
+      files:
+        - emuemu/Move.ani
+    - name: Precision
+      files:
+        - emuemu/Precision.ani
+theme:
+    default: Normal
+    top_left_arrow: Normal
+    size-ver: Normal
+    size-har: Normal
+    size-fdiag: Normal
+    size-bdiag: Normal
+    left_ptr: Normal
+    arrow: Normal
+    xterm: Text
+    text: Text
+    help: Help
+    whats_this: Help
+    question_arrow: Help
+    d9ce0ab605698f320427677b458ad60b: Help
+    5c6cd98b3f3ebcb1f9c7f1c204630408: Help
+    left_ptr_help: Help
+    w-resize: Horizontal
+    e-resize: Horizontal
+    ew-resize: Horizontal
+    h_double_arrow: Horizontal
+    sb_h_double_arrow:  Horizontal
+    size_hor: Horizontal
+    top_tee: Vertical
+    top_side: Vertical
+    v_double_arrow: Vertical
+    ur_angle: Diagonal2
+    top_right_corner: Diagonal2
+    ul_angle: Diagonal1
+    top_left_corner: Diagonal1
+    no-drop: Unavailable
+    not-allowed: Unavailable
+    forbidden: Unavailable
+    dnd-no-drop: Unavailable
+    move: Move
+    watch: Normal
+    wait: Normal
+    target: Precision
+    pointing_hand: Link
+    pointer: Link
+    link: Link
+    hand1: Link
+    hand2: Link
+    9d800788f1b08800ae810202380a0822: Link
+    e29285e634086352946a0e7090d73106: Link
+    3085a0e285430894940527032f8b26df: Link
+    640fb0e74195791501fd1ed57b41487f: Link
+    a2a266d0498c3104214a47bd64ab0fc8: Link
+    alias: Link

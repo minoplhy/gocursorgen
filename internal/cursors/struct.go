@@ -27,6 +27,7 @@ type CursorEntry struct {
 	Files   []FileEntry
 	Folder  string
 	HotSpot *hotspot.HotSpot
+	Sizes   []uint32 // empty = use original size
 	Options Options
 }
 
