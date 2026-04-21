@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	version   = "dev"
-	commit    = "none"
-	buildDate = "unknown"
+	Version   = "dev"
+	Commit    = "none"
+	BuildDate = "unknown"
 )
 
 func main() {
@@ -182,12 +182,12 @@ func usage(progname string) {
 }
 
 func createVersion() string {
-	out := fmt.Sprintf("%s", version)
-	if commit != "none" {
-		out += fmt.Sprintf("-%s", commit)
+	out := fmt.Sprintf("%s", Version)
+	if Commit != "none" {
+		out += fmt.Sprintf("-%s", Commit)
 	}
-	if buildDate != "unknown" {
-		out += fmt.Sprintf("-%s", buildDate)
+	if BuildDate != "unknown" {
+		out += fmt.Sprintf("-%s", BuildDate)
 	}
 	return out
 }
